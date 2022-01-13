@@ -36,7 +36,7 @@ public class Stats {
         return findTotal() / days.length;
     }
 
-    int findDistance() {
+    double findDistance() {
         return Converter.convertToDistance(findTotal());
     }
 

@@ -9,8 +9,8 @@ public class Converter {
         return calories / KCAL_TO_CAL;
     }
 
-    static int convertToDistance(int steps) {
-        int distance = steps * STEP_TO_CM;
+    static double convertToDistance(int steps) {
+        double distance = steps * STEP_TO_CM;
         return distance / KM_TO_CM;
     }
 }
