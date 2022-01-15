@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -7,7 +8,7 @@ public class Main {
 
         while (true) {
             printMenu();
-            int command = scanner.nextInt();
+            int command = readInt(scanner, 0, 3, "Извините, такой команды пока нет");
 
             if (command == 1) {
                 saveSteps(scanner, stepTracker);
@@ -18,8 +19,6 @@ public class Main {
             } else if (command == 0) {
                 System.out.println("Программа завершена");
                 break;
-            } else {
-                System.out.println("Извините, такой команды пока нет");
             }
         }
     }
@@ -34,34 +33,20 @@ public class Main {
 
     public static void saveSteps(Scanner scanner, StepTracker stepTracker) {
         System.out.println("Введите месяц");
-        String month = scanner.next();
-        Months result = Months.fromString(month.trim());
-        if (result == null) {
-            System.out.println("Такого месяца нет");
-            return;
-        }
+        Months result = readMonth(scanner);
 
         System.out.println("Введите день");
-        int day = scanner.nextInt();
-        if (day <= 0 || day > 30) {
-            System.out.println("Введите число от 1 до 30");
-            return;
-        }
+        int day = readInt(scanner, 1, 30, "Введите число от 1 до 30");
 
         System.out.println("Введите количество шагов");
-        int steps = scanner.nextInt();
-        if (steps < 0) {
-            System.out.println("Число шагов не может быть отрицательным");
-            return;
-        }
+        int steps = readInt(scanner, 0, Integer.MAX_VALUE, "Число шагов не может быть отрицательным");
         stepTracker.saveSteps(result, day, steps);
         System.out.println("Данные сохранены");
     }
 
     public static void showStats(Scanner scanner, StepTracker stepTracker) {
         System.out.println("Введите месяц");
-        String month = scanner.next();
-        Months result = Months.fromString(month.trim());
+        Months result = readMonth(scanner);
         Stats stats = stepTracker.getStats(result);
         System.out.println("Количество пройденных шагов по дням:");
 
@@ -82,12 +67,38 @@ public class Main {
 
     public static void changeGoal(Scanner scanner, StepTracker stepTracker) {
         System.out.println("Введите новое колличество шагов");
-        int goal = scanner.nextInt();
-        if (goal > 0) {
-            stepTracker.setGoal(goal);
-            System.out.println("Цель сохранена");
-        } else {
-            System.out.println("Число шагов не может быть отрицательным");
+        int goal = readInt(scanner, 0, Integer.MAX_VALUE, "Число шагов не может быть отрицательным");
+        stepTracker.setGoal(goal);
+        System.out.println("Цель сохранена");
+    }
+
+    public static int readInt(Scanner scanner, int min, int max, String hint) {
+        while (true) {
+            try {
+                int number = scanner.nextInt();
+                if (number < min || number > max) {
+                    throw new IllegalArgumentException();
+                }
+                return number;
+            } catch (InputMismatchException e) {
+                System.out.println("Неверный ввод, введите число");
+                scanner.nextLine();
+            } catch (IllegalArgumentException e) {
+                System.out.println(hint);
+                scanner.nextLine();
+            }
+        }
+    }
+
+    public static Months readMonth(Scanner scanner) {
+        while (true) {
+            String month = scanner.next();
+            Months result = Months.fromString(month.trim());
+            if (result == null) {
+                System.out.println("Такого месяца нет, попробуйте ещё раз");
+            } else {
+                return result;
+            }
         }
     }
 }
